@@ -8,17 +8,46 @@ const btn = document.getElementById("btn");
 const input = document.getElementById("todoinput");
 const form = document.querySelector("form");
 const list = document.getElementById("todolist");
+function readTodos() {
+    const todosJSON = localStorage.getItem('todos');
+    if (todosJSON === null) {
+        return [];
+    }
+    return JSON.parse(todosJSON);
+}
+;
+function saveTodos() {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+;
+;
+const todos = readTodos();
+todos.forEach(createTodo);
 form.addEventListener("submit", function (event) {
     event.preventDefault();
-    const newTodoText = input.value;
+    const newTodo = {
+        text: input.value,
+        completed: false
+    };
+    createTodo(newTodo);
+    todos.push(newTodo);
+    saveTodos();
+    input.value = '';
+});
+function createTodo(todo) {
     const newLi = document.createElement("li");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    newLi.append(newTodoText);
+    checkbox.checked = todo.completed;
+    checkbox.addEventListener("change", function () {
+        todo.completed = checkbox.checked;
+        saveTodos();
+    });
+    newLi.append(todo.text);
     newLi.append(checkbox);
     list.append(newLi);
-    input.value = '';
-});
+}
+;
 /*  You have to specify the context for a plain event handler:
 
     function handleSubmit(e: SubmitEvent) {
